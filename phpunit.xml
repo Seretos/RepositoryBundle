@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- http://phpunit.de/manual/4.1/en/appendixes.configuration.html -->
+<phpunit backupGlobals="false"
+         colors="true">
+    <testsuites>
+        <testsuite name="orm base bundle unit tests">
+            <file>tests/repository/BaseRepositoryTest.php</file>
+            <file>tests/factory/RepositoryFactoryTest.php</file>
+            <file>tests/iterator/AbstractResultIteratorTest.php</file>
+        </testsuite>
+        <testsuite name="orm base bundle functional tests">
+            <file>tests/MysqliBaseRepositoryFunctionalTest.php</file>
+            <file>tests/PdoBaseRepositoryFunctionalTest.php</file>
+        </testsuite>
+    </testsuites>
+    <logging>
+        <log type="coverage-text" target="coverage.txt" lowUpperBound="35"
+             highLowerBound="70"/>
+    </logging>
+    <filter>
+        <whitelist>
+            <directory>repository</directory>
+            <directory>factory</directory>
+            <directory>exception</directory>
+            <directory>interfaces</directory>
+            <directory>iterator</directory>
+        </whitelist>
+    </filter>
+</phpunit>
