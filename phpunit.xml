@@ -4,12 +4,12 @@
 <phpunit backupGlobals="false"
          colors="true">
     <testsuites>
-        <testsuite name="orm base bundle unit tests">
+        <testsuite name="repository bundle unit tests">
             <file>tests/repository/BaseRepositoryTest.php</file>
             <file>tests/factory/RepositoryFactoryTest.php</file>
             <file>tests/iterator/AbstractResultIteratorTest.php</file>
         </testsuite>
-        <testsuite name="orm base bundle functional tests">
+        <testsuite name="repository bundle functional tests">
             <file>tests/MysqliBaseRepositoryFunctionalTest.php</file>
             <file>tests/PdoBaseRepositoryFunctionalTest.php</file>
         </testsuite>

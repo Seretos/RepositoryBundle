@@ -10,6 +10,7 @@ namespace database\RepositoryBundle\factory;
 
 
 use database\DriverBundle\connection\interfaces\ConnectionInterface;
+use database\QueryBuilderBundle\builder\ExpressionBuilder;
 use database\QueryBuilderBundle\builder\QueryBuilder;
 use database\QueryBuilderBundle\factory\QueryBuilderBundleFactory;
 use database\QueryBundle\factory\QueryBundleFactory;
@@ -38,10 +39,18 @@ class RepositoryFactory {
         $this->queryFactory = new QueryBundleFactory($this->connection);
     }
 
+    /**
+     * @return QueryBuilder
+     */
     public function createQueryBuilder () {
         return $this->queryBuilderFactory->createQueryBuilder();
     }
 
+    /**
+     * @param string|QueryBuilder $sql
+     *
+     * @return Query
+     */
     public function createQuery ($sql) {
         $parameters = [];
         if ($sql instanceof QueryBuilder) {
@@ -51,10 +60,20 @@ class RepositoryFactory {
         return $this->queryFactory->createQuery($sql, $parameters);
     }
 
+    /**
+     * @return ExpressionBuilder
+     */
     public function createExpressionBuilder () {
         return $this->queryBuilderFactory->createExpressionBuilder();
     }
 
+    /**
+     * @param string $class result iterator class
+     * @param Query  $query
+     *
+     * @return ResultIteratorInterface
+     * @throws RepositoryException
+     */
     public function createResultIterator ($class, Query $query) {
         $result = $query->buildResult();
         $iterator = new $class($result);
