@@ -1,10 +1,10 @@
 <?php
-use database\RepositoryBundle\factory\RepositoryFactory;
-use database\RepositoryBundle\repository\BaseRepository;
+use database\QueryBuilderBundle\builder\ExpressionBuilder;
 use database\QueryBuilderBundle\builder\QueryBuilder;
 use database\QueryBuilderBundle\expression\AndExpression;
-use database\QueryBuilderBundle\expression\Expression;
 use database\QueryBundle\query\Query;
+use database\RepositoryBundle\factory\RepositoryFactory;
+use database\RepositoryBundle\repository\BaseRepository;
 
 /**
  * Created by PhpStorm.
@@ -106,7 +106,7 @@ class BaseRepositoryTest extends PHPUnit_Framework_TestCase {
     }
 
     private function createFindByTableExpressionMock ($filters = []) {
-        $mockExpression = $this->getMockBuilder(Expression::class)
+        $mockExpression = $this->getMockBuilder(ExpressionBuilder::class)
                                ->disableOriginalConstructor()
                                ->getMock();
         $mockAndExpression = $this->getMockBuilder(AndExpression::class)
@@ -187,9 +187,10 @@ class BaseRepositoryTest extends PHPUnit_Framework_TestCase {
                         ->will($this->returnValue($mockBuilder));
         }
 
-        $mockBuilder->expects($this->once())
-                    ->method('buildQuery')
-                    ->will($this->returnValue($mockQuery));
+        $this->mockFactory->expects($this->once())
+                          ->method('createQuery')
+                          ->with($mockBuilder)
+                          ->will($this->returnValue($mockQuery));
 
         $mockQuery->expects($this->once())
                   ->method('setParameters')

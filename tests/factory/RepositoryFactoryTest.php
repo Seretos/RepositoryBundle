@@ -2,8 +2,9 @@
 use database\DriverBundle\connection\interfaces\ConnectionInterface;
 use database\DriverBundle\connection\interfaces\StatementInterface;
 use database\QueryBuilderBundle\builder\QueryBuilder;
-use database\QueryBuilderBundle\expression\Expression;
+use database\QueryBuilderBundle\factory\QueryBuilderBundleFactory;
 use database\QueryBuilderBundle\factory\QueryBuilderFactory;
+use database\QueryBundle\factory\QueryBundleFactory;
 use database\QueryBundle\factory\QueryFactory;
 use database\QueryBundle\query\Query;
 use database\RepositoryBundle\exception\RepositoryException;
@@ -48,10 +49,10 @@ class RepositoryFactoryTest extends PHPUnit_Framework_TestCase {
         $this->mockConnection = $this->getMockBuilder(ConnectionInterface::class)
                                      ->disableOriginalConstructor()
                                      ->getMock();
-        $this->mockQueryBuilderFactory = $this->getMockBuilder(QueryBuilderFactory::class)
+        $this->mockQueryBuilderFactory = $this->getMockBuilder(QueryBuilderBundleFactory::class)
                                               ->disableOriginalConstructor()
                                               ->getMock();
-        $this->mockQueryFactory = $this->getMockBuilder(QueryFactory::class)
+        $this->mockQueryFactory = $this->getMockBuilder(QueryBundleFactory::class)
                                        ->disableOriginalConstructor()
                                        ->getMock();
 
@@ -64,9 +65,9 @@ class RepositoryFactoryTest extends PHPUnit_Framework_TestCase {
         $queryFactoryProperty = $this->factoryReflection->getProperty('queryFactory');
         $queryFactoryProperty->setAccessible(true);
 
-        $this->assertInstanceOf(QueryBuilderFactory::class,
+        $this->assertInstanceOf(QueryBuilderBundleFactory::class,
                                 $queryBuilderFactoryProperty->getValue($this->repositoryFactory));
-        $this->assertInstanceOf(QueryFactory::class,
+        $this->assertInstanceOf(QueryBundleFactory::class,
                                 $queryFactoryProperty->getValue($this->repositoryFactory));
 
         $queryBuilderFactoryProperty->setValue($this->repositoryFactory, $this->mockQueryBuilderFactory);
@@ -77,35 +78,49 @@ class RepositoryFactoryTest extends PHPUnit_Framework_TestCase {
      * @test
      */
     public function createQueryBuilder () {
-        $queryBuilder = $this->repositoryFactory->createQueryBuilder();
-
-        $queryBuilderReflection = new ReflectionClass(QueryBuilder::class);
-        $queryBuilderFactoryProperty = $queryBuilderReflection->getProperty('factory');
-        $queryBuilderFactoryProperty->setAccessible(true);
-
-        $this->assertSame($this->mockQueryBuilderFactory, $queryBuilderFactoryProperty->getValue($queryBuilder));
-        $this->assertInstanceOf(QueryBuilder::class, $queryBuilder);
+        $this->mockQueryBuilderFactory->expects($this->once())
+                                      ->method('createQueryBuilder')
+                                      ->will($this->returnValue('success'));
+        $this->assertSame('success', $this->repositoryFactory->createQueryBuilder());
     }
 
     /**
      * @test
      */
     public function createQuery () {
-        $query = $this->repositoryFactory->createQuery('SELECT');
+        $this->mockQueryFactory->expects($this->once())
+                               ->method('createQuery')
+                               ->with('SELECT', [])
+                               ->will($this->returnValue('success'));
+        $this->assertSame('success', $this->repositoryFactory->createQuery('SELECT'));
+    }
 
-        $queryReflection = new ReflectionClass(Query::class);
-        $queryFactoryProperty = $queryReflection->getProperty('factory');
-        $queryFactoryProperty->setAccessible(true);
+    /**
+     * @test
+     */
+    public function createQuery_withBuilder () {
+        $mockBuilder = $this->getMockBuilder(QueryBuilder::class)
+                            ->disableOriginalConstructor()
+                            ->getMock();
+        $mockBuilder->expects($this->once())
+                    ->method('getParameters')
+                    ->will($this->returnValue('test'));
 
-        $this->assertSame($this->mockQueryFactory, $queryFactoryProperty->getValue($query));
-        $this->assertInstanceOf(Query::class, $query);
+        $this->mockQueryFactory->expects($this->once())
+                               ->method('createQuery')
+                               ->with($mockBuilder, 'test')
+                               ->will($this->returnValue('success'));
+        $this->assertSame('success', $this->repositoryFactory->createQuery($mockBuilder));
     }
 
     /**
      * @test
      */
     public function createExpression () {
-        $this->assertInstanceOf(Expression::class, $this->repositoryFactory->createExpressionBuilder());
+        $this->mockQueryBuilderFactory->expects($this->once())
+                                      ->method('createExpressionBuilder')
+                                      ->will($this->returnValue('success'));
+        $this->assertSame('success', $this->repositoryFactory->createExpressionBuilder());
     }
 
     /**

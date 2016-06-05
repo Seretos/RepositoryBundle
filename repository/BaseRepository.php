@@ -10,12 +10,12 @@ namespace database\RepositoryBundle\repository;
 
 
 use database\DriverBundle\connection\interfaces\StatementInterface;
+use database\QueryBuilderBundle\builder\ExpressionBuilder;
+use database\QueryBuilderBundle\builder\QueryBuilder;
+use database\QueryBundle\query\Query;
 use database\RepositoryBundle\exception\RepositoryException;
 use database\RepositoryBundle\factory\RepositoryFactory;
 use database\RepositoryBundle\interfaces\ResultIteratorInterface;
-use database\QueryBuilderBundle\builder\QueryBuilder;
-use database\QueryBuilderBundle\expression\Expression;
-use database\QueryBundle\query\Query;
 
 class BaseRepository {
     /**
@@ -35,10 +35,19 @@ class BaseRepository {
     }
 
     /**
-     * @return Expression
+     * @return ExpressionBuilder
      */
     protected function createExpressionBuilder () {
         return $this->factory->createExpressionBuilder();
+    }
+
+    /**
+     * @param $sql
+     *
+     * @return Query
+     */
+    protected function createQuery ($sql) {
+        return $this->factory->createQuery($sql);
     }
 
     /**
@@ -73,7 +82,7 @@ class BaseRepository {
         $this->addFilterExpressions($builder, $filters);
         $this->addOrder($builder, $orders);
 
-        $query = $builder->buildQuery();
+        $query = $this->createQuery($builder);
         $query->setParameters($filters);
 
         return $query->buildResult();

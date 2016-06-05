@@ -11,9 +11,8 @@ namespace database\RepositoryBundle\factory;
 
 use database\DriverBundle\connection\interfaces\ConnectionInterface;
 use database\QueryBuilderBundle\builder\QueryBuilder;
-use database\QueryBuilderBundle\expression\Expression;
-use database\QueryBuilderBundle\factory\QueryBuilderFactory;
-use database\QueryBundle\factory\QueryFactory;
+use database\QueryBuilderBundle\factory\QueryBuilderBundleFactory;
+use database\QueryBundle\factory\QueryBundleFactory;
 use database\QueryBundle\query\Query;
 use database\RepositoryBundle\exception\RepositoryException;
 use database\RepositoryBundle\interfaces\ResultIteratorInterface;
@@ -25,30 +24,35 @@ class RepositoryFactory {
     private $connection;
 
     /**
-     * @var QueryBuilderFactory
+     * @var QueryBuilderBundleFactory
      */
     private $queryBuilderFactory;
     /**
-     * @var QueryFactory
+     * @var QueryBundleFactory
      */
     private $queryFactory;
 
     public function __construct (ConnectionInterface $connection) {
         $this->connection = $connection;
-        $this->queryBuilderFactory = new QueryBuilderFactory($this->connection);
-        $this->queryFactory = new QueryFactory($this->connection);
+        $this->queryBuilderFactory = new QueryBuilderBundleFactory();
+        $this->queryFactory = new QueryBundleFactory($this->connection);
     }
 
     public function createQueryBuilder () {
-        return new QueryBuilder($this->queryBuilderFactory);
+        return $this->queryBuilderFactory->createQueryBuilder();
     }
 
     public function createQuery ($sql) {
-        return new Query($this->queryFactory, $sql);
+        $parameters = [];
+        if ($sql instanceof QueryBuilder) {
+            $parameters = $sql->getParameters();
+        }
+
+        return $this->queryFactory->createQuery($sql, $parameters);
     }
 
     public function createExpressionBuilder () {
-        return new Expression();
+        return $this->queryBuilderFactory->createExpressionBuilder();
     }
 
     public function createResultIterator ($class, Query $query) {
