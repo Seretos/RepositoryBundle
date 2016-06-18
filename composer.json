@@ -18,9 +18,9 @@
   ],
   "require": {
     "php": "5.6.*",
-    "LimetecBiotechnologies/database/DriverBundle": "0.2.*",
-    "LimetecBiotechnologies/database/QueryBundle": "0.2.*",
-    "LimetecBiotechnologies/database/QueryBuilderBundle": "0.2.*"
+    "LimetecBiotechnologies/database/DriverBundle": "v0.2.*",
+    "LimetecBiotechnologies/database/QueryBundle": "v0.2.*",
+    "LimetecBiotechnologies/database/QueryBuilderBundle": "v0.2.*"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.3"
@@ -28,6 +28,11 @@
   "autoload": {
     "psr-4": {
       "database\\RepositoryBundle\\": ""
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.2.x-dev"
     }
   }
 }
