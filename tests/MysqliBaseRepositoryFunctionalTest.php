@@ -1,5 +1,7 @@
 <?php
 use database\DriverBundle\connection\mysqli\MysqliConnection;
+use database\QueryBuilderBundle\factory\QueryBuilderBundleFactory;
+use database\QueryBundle\factory\QueryBundleFactory;
 use database\RepositoryBundle\factory\RepositoryFactory;
 use database\RepositoryBundle\repository\BaseRepository;
 use database\RepositoryBundle\tests\AbstractBaseRepositoryFunctionalTest;
@@ -20,7 +22,9 @@ class MysqliBaseRepositoryFunctionalTest extends AbstractBaseRepositoryFunctiona
 
         $this->connection = new MysqliConnection($mysqli);
 
-        $factory = new RepositoryFactory($this->connection);
+        $factory = new RepositoryFactory($this->connection,
+                                         new QueryBuilderBundleFactory(),
+                                         new QueryBundleFactory($this->connection));
         $this->repository = new BaseRepository($factory);
     }
 }

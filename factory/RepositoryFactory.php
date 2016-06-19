@@ -33,10 +33,12 @@ class RepositoryFactory {
      */
     private $queryFactory;
 
-    public function __construct (ConnectionInterface $connection) {
+    public function __construct (ConnectionInterface $connection,
+                                 QueryBuilderBundleFactory $queryBuilderFactory,
+                                 QueryBundleFactory $queryFactory) {
         $this->connection = $connection;
-        $this->queryBuilderFactory = new QueryBuilderBundleFactory();
-        $this->queryFactory = new QueryBundleFactory($this->connection);
+        $this->queryBuilderFactory = $queryBuilderFactory;
+        $this->queryFactory = $queryFactory;
     }
 
     /**

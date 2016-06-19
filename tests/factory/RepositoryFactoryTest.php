@@ -3,9 +3,7 @@ use database\DriverBundle\connection\interfaces\ConnectionInterface;
 use database\DriverBundle\connection\interfaces\StatementInterface;
 use database\QueryBuilderBundle\builder\QueryBuilder;
 use database\QueryBuilderBundle\factory\QueryBuilderBundleFactory;
-use database\QueryBuilderBundle\factory\QueryBuilderFactory;
 use database\QueryBundle\factory\QueryBundleFactory;
-use database\QueryBundle\factory\QueryFactory;
 use database\QueryBundle\query\Query;
 use database\RepositoryBundle\exception\RepositoryException;
 use database\RepositoryBundle\factory\RepositoryFactory;
@@ -36,12 +34,12 @@ class RepositoryFactoryTest extends PHPUnit_Framework_TestCase {
     private $mockConnection;
 
     /**
-     * @var QueryBuilderFactory|PHPUnit_Framework_MockObject_MockObject
+     * @var QueryBuilderBundleFactory|PHPUnit_Framework_MockObject_MockObject
      */
     private $mockQueryBuilderFactory;
 
     /**
-     * @var QueryFactory|PHPUnit_Framework_MockObject_MockObject
+     * @var QueryBundleFactory|PHPUnit_Framework_MockObject_MockObject
      */
     private $mockQueryFactory;
 
@@ -57,7 +55,9 @@ class RepositoryFactoryTest extends PHPUnit_Framework_TestCase {
                                        ->getMock();
 
         $this->factoryReflection = new ReflectionClass(RepositoryFactory::class);
-        $this->repositoryFactory = new RepositoryFactory($this->mockConnection);
+        $this->repositoryFactory = new RepositoryFactory($this->mockConnection,
+                                                         $this->mockQueryBuilderFactory,
+                                                         $this->mockQueryFactory);
 
         $queryBuilderFactoryProperty = $this->factoryReflection->getProperty('queryBuilderFactory');
         $queryBuilderFactoryProperty->setAccessible(true);

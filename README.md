@@ -70,8 +70,10 @@ mysqli:
 ```php
 $mysqli = new mysqli($host,$user,$password,$database);
 $connection = new MysqliConnection($mysqli);
+$queryBuilderFactory = new QueryBuilderBundleFactory();
+$queryFactory = new QueryBundleFactory($connection);
 
-$factory = new RepositoryFactory($connection);
+$factory = new RepositoryFactory($connection,$queryBuilderFactory, $queryFactory);
 $repository = new MyRepository($factory);
 ```
 pdo:
