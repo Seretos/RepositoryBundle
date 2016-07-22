@@ -50,6 +50,13 @@ class BaseRepository {
         return $this->factory->createQuery($sql);
     }
 
+    protected function buildOneOrNullResult (StatementInterface $result) {
+        if($result->rowCount() > 1){
+            return null;
+        }
+        return $result->fetch();
+    }
+
     /**
      * @param string $class
      * @param Query  $query
